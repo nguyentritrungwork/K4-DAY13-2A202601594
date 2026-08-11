@@ -2,15 +2,15 @@
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm:
-- Repository URL:
+- Tên nhóm: C6-2
+- Repository URL:https://github.com/nguyentritrungwork/K4-DAY13-2A202601594
 - Commit SHA cuối:
-- Thành viên và vai trò:
+- Thành viên và vai trò:Nguyễn Nhật Minh ,Nguyễn Trí Trung, Trần Đặng Vương Quốc Long
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`:
-- Tổng số traces:
+- Điểm `validate_logs.py`: 30/100
+- Tổng số traces: 10
 - Số PII leak còn lại:
 - Link/đường dẫn dashboard:
 
