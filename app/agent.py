@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
-from .pii import hash_user_id, summarize_text
+from .pii import hash_user_id, scrub_text, summarize_text
 from .prompt_management import resolve_prompt
 from .tracing import get_langfuse_client, observe, tracing_enabled
 
@@ -47,6 +47,8 @@ class LabAgent:
             user_id=hash_user_id(user_id),
             session_id=session_id,
             tags=["lab", feature, self.model],
+            input=scrub_text(message),
+            output=scrub_text(response.text),
             metadata={
                 "prompt_name": prompt.name,
                 "prompt_label": prompt.label,
@@ -56,6 +58,8 @@ class LabAgent:
         )
         langfuse_client.update_current_generation(
             model=self.model,
+            input=scrub_text(prompt.text),
+            output=scrub_text(response.text),
             metadata={
                 "doc_count": len(docs),
                 "query_preview": summarize_text(message),

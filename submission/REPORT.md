@@ -23,11 +23,14 @@
 
 ## 4. Prompt versioning
 
-- Prompt name:
-- Version/label baseline:
-- Version/label candidate:
+- Prompt name:day13-chat
+- Version/label baseline:  3.2.1
+- Version/label candidate:	3.2.1
 - Trace ID của mỗi version:
+      baseline: run: 1ba44fecee2c20585b87fce05970de13
+      candidate: run: b3085ca32edbc4ff6da353296c5fbbb2
 - Bằng chứng đổi label hoặc rollback:
+https://cloud.langfuse.com/project/cmsofrgxh00obad0cs7kwe4bb/prompts/day13-chat?version=1&tab=linked-generations
 
 ## 5. Dashboard, SLO và alerts
 
