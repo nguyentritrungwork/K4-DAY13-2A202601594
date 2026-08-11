@@ -3,41 +3,52 @@
 ## 1. Thông tin nhóm
 
 - Tên nhóm: C6-2
-- Repository URL:https://github.com/nguyentritrungwork/K4-DAY13-2A202601594
-- Commit SHA cuối:
-- Thành viên và vai trò:Nguyễn Nhật Minh ,Nguyễn Trí Trung, Trần Đặng Vương Quốc Long
+- Repository URL: https://github.com/nguyentritrungwork/K4-DAY13-2A202601594
+- Commit SHA cuối: 1fd713e13e4c711b613d3d3c2ddf8baecbd7bc46
+- Thành viên và vai trò:
+  - Nguyễn Trí Trung (2A202601594) - Vai trò B (Tracing & Prompt)
+  - Nguyễn Nhật Minh (2A202601414) - Vai trò C (Dashboard & SLO)
+  - Trần Đặng Vương Quốc Long (2A202601744) - Vai trò A (Logging & PII)
 
 ## 2. Kết quả kỹ thuật
 
-- Điểm `validate_logs.py`: 30/100
-- Tổng số traces: 10
-- Số PII leak còn lại:
-- Link/đường dẫn dashboard:
+- Điểm `validate_logs.py`: 100/100
+- Tổng số traces: 10+ traces trên Langfuse
+- Số PII leak còn lại: 0
+- Link/đường dẫn dashboard: [config/dashboard.yaml](file:///d:/K4-DAY13-2A202601594/config/dashboard.yaml)
 
 ## 3. Logging và tracing
 
-- Evidence correlation ID:
-- Evidence PII redaction:
-- Evidence trace waterfall:
-- Giải thích một span đáng chú ý:
+- Evidence correlation ID: Có trường `correlation_id` (ví dụ: `req-3de71d9f`) đi kèm trong từng dòng log JSON tại `data/logs.jsonl` và HTTP response headers.
+- Evidence PII redaction: Các thông tin nhạy cảm như Email, SĐT và Credit Card trong logs đều được che đậy dưới dạng `[REDACTED_EMAIL]`, `[REDACTED_PHONE_VN]`, `[REDACTED_CREDIT_CARD]`.
+- Evidence trace waterfall: Tệp ảnh [submission/evidence/trace_waterfall.png](file:///d:/K4-DAY13-2A202601594/submission/evidence/trace_waterfall.png).
+- Giải thích một span đáng chú ý: Span `retrieve` (truy xuất tài liệu từ Mock RAG). Span này được lồng trực tiếp bên dưới Trace cha `run`. Khi xảy ra sự cố `rag_slow`, span này bị kéo dài thời gian xử lý lên 2.5s, giúp nhóm nhanh chóng phát hiện chính xác cấu phần RAG đang bị thắt nút cổ chai (bottleneck).
 
 ## 4. Prompt versioning
 
-- Prompt name:day13-chat
-- Version/label baseline:  3.2.1
-- Version/label candidate:	3.2.1
+- Prompt name: day13-chat
+- Version/label baseline: 3.2.1 (Version 1)
+- Version/label candidate: 3.2.1 (Version 2)
 - Trace ID của mỗi version:
       baseline: run: 1ba44fecee2c20585b87fce05970de13
       candidate: run: b3085ca32edbc4ff6da353296c5fbbb2
 - Bằng chứng đổi label hoặc rollback:
-https://cloud.langfuse.com/project/cmsofrgxh00obad0cs7kwe4bb/prompts/day13-chat?version=1&tab=linked-generations
+  - Link: https://cloud.langfuse.com/project/cmsofrgxh00obad0cs7kwe4bb/prompts/day13-chat?version=1&tab=linked-generations
+  - Ảnh bằng chứng: [submission/evidence/prompt_rollback.png](file:///d:/K4-DAY13-2A202601594/submission/evidence/prompt_rollback.png)
 
 ## 5. Dashboard, SLO và alerts
 
-- Kết quả `validate_dashboard.py`:
-- Evidence dashboard:
+- Kết quả `validate_dashboard.py`: HỢP LỆ (6/6 panel trong dashboard contract).
+- Evidence dashboard: Tệp ảnh [submission/evidence/image.png](file:///d:/K4-DAY13-2A202601594/submission/evidence/image.png)
 - SLO đã chọn và lý do:
+  - Latency: P95 Latency < 2000ms. Lý do: Đảm bảo phản hồi nhanh cho các cuộc trò chuyện tương tác thời gian thực của người dùng.
+  - Error Rate: < 1%. Lý do: Đảm bảo tính sẵn sàng và tin cậy cực cao của dịch vụ AI.
 - Alert rules và runbook:
+  - Alert rules: Gửi cảnh báo Slack/Email nếu tỉ lệ lỗi > 5% trong 5 phút hoặc P95 Latency > 2500ms.
+  - Runbook:
+    1. Kiểm tra Dashboard xem lỗi/trễ xảy ra diện rộng hay chỉ ảnh hưởng một số endpoints/features.
+    2. Kiểm tra Langfuse Traces tìm kiếm span bị chậm (`retrieve` hay `generate`).
+    3. Nếu chậm do `retrieve`, kiểm tra kết nối Vector Database; nếu chậm do `generate`, kiểm tra API status của nhà cung cấp LLM hoặc tiến hành rollback prompt version gần nhất nếu vừa thay đổi.
 
 ## 6. Điều tra challenge
 
@@ -75,4 +86,6 @@ Với mỗi thành viên, ghi rõ nhiệm vụ và link commit/PR tương ứng.
 
 | Thành viên | Phần việc | Commit/PR | Điều đã học |
 |---|---|---|---|
-| | | | |
+| Nguyễn Trí Trung (2A202601594) | Phụ trách chính vai trò B (Tracing & Prompt): cấu hình SDK Langfuse gửi traces kèm metadata, prompt versioning v1/v2, cấu hình rollout/rollback; chạy điều tra và xác định lỗi ở CP3. | Các commit của CP2 & CP3 | Hiểu cách quản lý prompt động và chẩn đoán sự cố qua trace waterfall của Langfuse. |
+| Nguyễn Nhật Minh (2A202601414) | Phụ trách chính vai trò C (Dashboard & SLO): cấu hình 6 panels dashboard, SLO threshold, alert rules và runbook ở CP2; cấu hình môi trường baseline ở CP0. | Các commit của CP0 & CP2 | Nắm rõ quy trình thiết lập dashboard phân tích logs và đặt ra chỉ số SLO cảnh báo hợp lý. |
+| Trần Đặng Vương Quốc Long (2A202601744) | Phụ trách chính vai trò A (Logging & PII): cấu hình logging JSON, middleware Correlation ID, redaction ẩn PII (Email, SĐT, Credit Card) trong log ở CP1. | Các commit của CP1 | Thành thạo việc thiết kế log JSON có cấu trúc an toàn, tránh rò rỉ dữ liệu nhạy cảm PII. |
